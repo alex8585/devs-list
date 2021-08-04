@@ -4,14 +4,6 @@ import Box from "@material-ui/core/Box"
 import Toolbar from "@material-ui/core/Toolbar"
 
 function AdminLayout({ children, title }) {
-  //if (userLoaded && (!user || !user.isAdmin)) {
-  //router.push("/login")
-  //}
-
-  //   if (!user) {
-  //     return null
-  //   }
-
   return (
     <Box sx={{ display: "flex" }}>
       <AdminMenu title={title} />

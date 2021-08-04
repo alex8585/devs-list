@@ -4,6 +4,7 @@ import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import { makeStyles } from "@material-ui/styles"
 
+import { InertiaLink, usePage } from "@inertiajs/inertia-react"
 const useStyles = makeStyles((theme) => ({
   menu: {
     "& .MuiButton-root.MuiButton-outlined": {
@@ -24,11 +25,9 @@ export default function AccountMenu() {
 
   const classes = useStyles()
 
-  const handleLogout = () => {
-    // handleClose()
-    // deleteUserFromLocalStorage()
-    // dispatch(unsetUser())
-  }
+  const {
+    auth: { user },
+  } = usePage().props
 
   return (
     <div className={classes.menu}>
@@ -40,7 +39,7 @@ export default function AccountMenu() {
         onClick={handleClick}
         variant="outlined"
       >
-        {/* {user && user.username ? user.username : "Dashboard"} */}
+        {user && user.name ? user.name : "Dashboard"}
       </Button>
       <Menu
         id="basic-menu"
@@ -51,7 +50,14 @@ export default function AccountMenu() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <InertiaLink
+          as="button"
+          method="post"
+          href={route("logout")}
+          className="text-sm text-gray-700"
+        >
+          <MenuItem>Logout</MenuItem>
+        </InertiaLink>
       </Menu>
     </div>
   )

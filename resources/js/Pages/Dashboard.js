@@ -6,9 +6,9 @@ import Paper from "@material-ui/core/Paper"
 
 import Button from "@material-ui/core/Button"
 
-const Tags = () => {
+const Dashbord = () => {
   return (
-    <AdminLayout title="Tags">
+    <AdminLayout title="Dashbord">
       <Box sx={{ width: "100%" }}>
         <div>
           <Button variant="contained">Create</Button>
@@ -20,4 +20,4 @@ const Tags = () => {
   )
 }
 
-export default Tags
+export default Dashbord

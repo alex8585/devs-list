@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const LeftMenu = () => {
-  const asPath = ""
+  const current = route().current()
+  //console.log(current)
 
   const classes = useStyles()
 
@@ -30,8 +31,8 @@ const LeftMenu = () => {
         <a href="/admin">
           <ListItem
             button
-            className={asPath == "/admin" ? "active" : ""}
-            disabled={asPath == "/admin"}
+            className={current == "dashboard" ? "active" : ""}
+            disabled={current == "dashboard"}
           >
             <ListItemIcon>
               <DashboardIcon />
@@ -40,29 +41,28 @@ const LeftMenu = () => {
           </ListItem>
         </a>
 
-        <a href="/admin/tags">
+        <a href="/admin/users">
           <ListItem
             button
-            className={asPath == "/admin/tags" ? "active" : ""}
-            disabled={asPath == "/admin/tags"}
+            className={current == "users" ? "active" : ""}
+            disabled={current == "users"}
           >
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Tags" />
+            <ListItemText primary="Users" />
           </ListItem>
         </a>
-
-        <a href="/admin/portfolios">
+        <a href="/admin/tags">
           <ListItem
             button
-            className={asPath == "/admin/portfolios" ? "active" : ""}
-            disabled={asPath == "/admin/portfolios"}
+            className={current == "/admin/tags" ? "active" : ""}
+            disabled={current == "/admin/tags"}
           >
             <ListItemIcon>
               <ShoppingCartIcon />
             </ListItemIcon>
-            <ListItemText primary="Portfolios" />
+            <ListItemText primary="Tags" />
           </ListItem>
         </a>
       </List>

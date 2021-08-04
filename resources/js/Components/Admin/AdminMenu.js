@@ -14,7 +14,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import NotificationsIcon from "@material-ui/icons/Notifications"
 import LeftMenu from "./LeftMenu"
 import AccountMenu from "./AccountMenu"
-
+import { InertiaLink, usePage } from '@inertiajs/inertia-react';
 import { makeStyles } from "@material-ui/styles"
 
 const useStyles = makeStyles((theme) => ({
@@ -104,9 +104,9 @@ function AdminMenu({ title = "Dashboard" }) {
           >
             {title}
           </Typography>
-          <a target="_blank" className={classes.url}>
+          {/* <a target="_blank" className={classes.url}>
             Frontend
-          </a>
+          </a> */}
           <AccountMenu />
         </Toolbar>
       </AppBar>
