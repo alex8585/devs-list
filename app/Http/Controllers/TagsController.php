@@ -24,7 +24,7 @@ class TagsController extends Controller
 
 
         return inertia(
-            'Tags/index',
+            'Tags/Index',
             [
                 'filters' => Request::all('search'),
                 'items' => $tags,

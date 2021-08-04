@@ -5,7 +5,12 @@ export default function useFormValues(initialState) {
 
   function handleChange(e) {
     const key = e.target.name
-    const value = e.target.value
+    let value = e.target.value
+
+    if (e.target.type === "checkbox") {
+      value = e.target.checked
+    }
+
     setValues((values) => ({
       ...values,
       [key]: value,

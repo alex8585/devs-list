@@ -22,14 +22,25 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     use  Authenticatable, Authorizable, HasFactory, Notifiable, AuthMustVerifyEmail;
 
     protected $casts = [
-        'owner' => 'boolean',
-        'email_verified_at' => 'datetime',
+        'is_admin' => 'boolean',
+        'created_at' => 'date:d-m-Y H:i',
+        'updated_at' => 'date:d-m-Y H:i',
+        'email_verified_at' => 'date:d-m-Y H:i',
     ];
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    public function getIsAdminAttribute()
+    {
+        if ($this->attributes['is_admin']) {
+            return true;
+        }
+
+        return false;
+    }
     public function categories()
     {
         return $this->hasMany(Category::class);
