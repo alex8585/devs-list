@@ -35,12 +35,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function getIsAdminAttribute()
     {
-        if ($this->attributes['is_admin']) {
-            return true;
-        }
-
-        return false;
+        return boolval($this->attributes['is_admin']);
     }
+
     public function categories()
     {
         return $this->hasMany(Category::class);

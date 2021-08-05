@@ -54,13 +54,27 @@ const headCells = [
   },
 ]
 
+let timeout
+
 const Users = () => {
   const [tagsQuery, setTagsQuery] = useState({
     page: 1,
     perPage: 5,
-    direction: "asc",
-    sort: "name",
+    direction: "desc",
+    sort: "id",
   })
+
+  const [showErorrs, setShowErrors] = useState(false)
+
+  function handleShowErrors() {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    setShowErrors(true)
+    timeout = setTimeout(() => {
+      setShowErrors(false)
+    }, 5000)
+  }
 
   let { page, perPage, direction, sort } = tagsQuery
 
@@ -76,7 +90,7 @@ const Users = () => {
   // Avoid a layout jump when reaching the last page with empty tags.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * perPage - total) : 0
 
-  const {
+  let {
     items: { data: tags },
     items: { total },
     flash: { success },
@@ -121,6 +135,7 @@ const Users = () => {
   const [currentRow, setCurrentRow] = useState({})
 
   const openCreateModalHandler = () => {
+    setShowErrors(false)
     setOpenCreateModal(true)
   }
 
@@ -128,16 +143,15 @@ const Users = () => {
     setOpenCreateModal(false)
   }
   const createSubminHanler = async (values, resetValues) => {
-    if (!values.name) {
-      return
-    }
-
     Inertia.post(route(route().current()), values, {
       replace: true,
       preserveState: true,
       onSuccess: (r) => {
         setOpenCreateModal(false)
         resetValues()
+      },
+      onFinish: (r) => {
+        handleShowErrors()
       },
     })
   }
@@ -158,10 +172,14 @@ const Users = () => {
       onSuccess: (r) => {
         setOpenDeleteConfirmModal(false)
       },
+      onFinish: (r) => {
+        handleShowErrors()
+      },
     })
   }
 
   const handleOpenEditModal = (row) => {
+    setShowErrors(false)
     setCurrentRow(row)
     setOpenEditModal(true)
   }
@@ -177,6 +195,9 @@ const Users = () => {
       onSuccess: (r) => {
         setOpenEditModal(false)
       },
+      onFinish: (r) => {
+        handleShowErrors()
+      },
     })
   }
 
@@ -184,15 +205,17 @@ const Users = () => {
     <AdminLayout title="Users">
       <div></div>
 
-      {error && <Alert severity="error">{error}</Alert>}
-      {success && <Alert severity="success">{success}</Alert>}
+      {showErorrs && error && <Alert severity="error">{error}</Alert>}
+      {showErorrs && success && <Alert severity="success">{success}</Alert>}
 
       <CreateModat
         errors={errors}
+        showErorrs={showErorrs}
         handleSubmit={createSubminHanler}
         open={openCreateModal}
         handleClose={closeCreateModalHandler}
       />
+
       <DeleteConfirmModal
         mtitle="Delete tag confirmation"
         currentRow={currentRow}
@@ -202,6 +225,8 @@ const Users = () => {
       />
 
       <EditModal
+        errors={errors}
+        showErorrs={showErorrs}
         setCurrentRow={setCurrentRow}
         currentRow={currentRow}
         handleSubmit={handleEditSubmit}
@@ -233,12 +258,7 @@ const Users = () => {
               <TableBody>
                 {tags.slice().map((row, index) => {
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.name}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       <TableCell> {row.id}</TableCell>
                       <TableCell> {row.name}</TableCell>
                       <TableCell align="left">{row.created_at}</TableCell>

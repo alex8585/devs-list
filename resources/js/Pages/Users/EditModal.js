@@ -5,7 +5,8 @@ import DialogActions from "@material-ui/core/DialogActions"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import React from "react"
-
+import Alert from "@material-ui/core/Alert"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Switch from "@material-ui/core/Switch"
 export default function EditModal({
   open,
@@ -13,6 +14,8 @@ export default function EditModal({
   handleSubmit,
   currentRow,
   setCurrentRow,
+  showErorrs,
+  errors,
 }) {
   const handleChangeRow = (e) => {
     const key = e.target.name
@@ -31,8 +34,14 @@ export default function EditModal({
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit tag</DialogTitle>
+        {showErorrs && Object.keys(errors).length !== 0 && (
+          <Alert severity="error">
+            {Object.keys(errors).map((keyName, i) => (
+              <div key={i}>{errors[keyName]}</div>
+            ))}
+          </Alert>
+        )}
         <DialogContent>
-          {/* <DialogContentText>Create new tag</DialogContentText> */}
           <TextField
             onChange={(e) => handleChangeRow(e)}
             name="name"
@@ -67,34 +76,33 @@ export default function EditModal({
             value={currentRow.password ? currentRow.password : ""}
           />{" "}
           {currentRow.is_admin && (
-            <Switch
-              defaultChecked
+            <FormControlLabel
+              control={
+                <Switch
+                  defaultChecked
+                  label="Admin"
+                  value={currentRow.is_admin}
+                  name="is_admin"
+                  onChange={(e) => handleChangeRow(e)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
               label="Admin"
-              value={currentRow.is_admin}
-              name="is_admin"
-              onChange={(e) => handleChangeRow(e)}
-              inputProps={{ "aria-label": "controlled" }}
             />
           )}
           {!currentRow.is_admin && (
-            <Switch
+            <FormControlLabel
+              control={
+                <Switch
+                  value={currentRow.is_admin}
+                  name="is_admin"
+                  onChange={(e) => handleChangeRow(e)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
               label="Admin"
-              value={currentRow.is_admin}
-              name="is_admin"
-              onChange={(e) => handleChangeRow(e)}
-              inputProps={{ "aria-label": "controlled" }}
             />
           )}
-          {/* <TextField
-            onChange={(e) => handleChangeRow(e)}
-            name="is_admin"
-            margin="dense"
-            id="is_admin"
-            label="Admin ?"
-            type="text"
-            fullWidth
-            variant="standard"
-          /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

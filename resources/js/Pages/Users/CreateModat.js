@@ -4,13 +4,19 @@ import Dialog from "@material-ui/core/Dialog"
 import DialogActions from "@material-ui/core/DialogActions"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogTitle from "@material-ui/core/DialogTitle"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
 import React from "react"
 import useFormValues from "@h/useFormValues"
 
-import { usePage } from "@inertiajs/inertia-react"
 import Alert from "@material-ui/core/Alert"
 import Switch from "@material-ui/core/Switch"
-export default function CreateModat({ open, handleClose, handleSubmit }) {
+export default function CreateModat({
+  open,
+  handleClose,
+  handleSubmit,
+  showErorrs,
+  errors,
+}) {
   const [values, handleChange, setValues, resetFormValues] = useFormValues({
     name: "",
     email: "",
@@ -18,25 +24,20 @@ export default function CreateModat({ open, handleClose, handleSubmit }) {
     is_admin: "",
   })
 
-  const {
-    flash: { success },
-    flash: { error },
-    errors,
-  } = usePage().props
-
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Create new User</DialogTitle>
-        {Object.keys(errors).length !== 0 && (
+        {showErorrs && Object.keys(errors).length !== 0 && (
           <Alert severity="error">
             {Object.keys(errors).map((keyName, i) => (
-              <span key={i}>{errors[keyName]}</span>
+              <div key={i}>{errors[keyName]}</div>
             ))}
           </Alert>
         )}
         <DialogContent>
           <TextField
+            value={values.name}
             onChange={(e) => handleChange(e)}
             name="name"
             margin="dense"
@@ -47,6 +48,7 @@ export default function CreateModat({ open, handleClose, handleSubmit }) {
             variant="standard"
           />
           <TextField
+            value={values.email}
             onChange={(e) => handleChange(e)}
             name="email"
             margin="dense"
@@ -57,6 +59,7 @@ export default function CreateModat({ open, handleClose, handleSubmit }) {
             variant="standard"
           />
           <TextField
+            value={values.password}
             onChange={(e) => handleChange(e)}
             name="password"
             margin="dense"
@@ -66,24 +69,17 @@ export default function CreateModat({ open, handleClose, handleSubmit }) {
             fullWidth
             variant="standard"
           />
-
-          <Switch
+          <FormControlLabel
+            control={
+              <Switch
+                value={values.is_admin}
+                name="is_admin"
+                onChange={(e) => handleChange(e)}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
             label="Admin"
-            name="is_admin"
-            onChange={(e) => handleChange(e)}
-            inputProps={{ "aria-label": "controlled" }}
           />
-
-          {/* <TextField
-            onChange={(e) => handleChange(e)}
-            name="is_admin"
-            margin="dense"
-            id="name"
-            label="Admin ?"
-            type="text"
-            fullWidth
-            variant="standard"
-          /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
