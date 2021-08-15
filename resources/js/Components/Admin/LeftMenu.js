@@ -65,6 +65,30 @@ const LeftMenu = () => {
             <ListItemText primary="Tags" />
           </ListItem>
         </a>
+        <a href="/admin/photos">
+          <ListItem
+            button
+            className={current == "/admin/photos" ? "active" : ""}
+            disabled={current == "/admin/photos"}
+          >
+            <ListItemIcon>
+              <ShoppingCartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Photos" />
+          </ListItem>
+        </a>
+        <a href="/admin/img-categories">
+          <ListItem
+            button
+            className={current == "/admin/img-categories" ? "active" : ""}
+            disabled={current == "/admin/img-categories"}
+          >
+            <ListItemIcon>
+              <ShoppingCartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Photos categories" />
+          </ListItem>
+        </a>
       </List>
     </div>
   )

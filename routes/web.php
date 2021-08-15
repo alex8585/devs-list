@@ -4,8 +4,11 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\TagsController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImgCategoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +33,10 @@ Route::get('/', function () {
 });
 
 
+Route::get('/img/{path}', [ImagesController::class, 'show'])->where('path', '.*');
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -43,6 +48,31 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('users/{user}', [UsersController::class, 'update'])->name('users.update');
     Route::delete('users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
     Route::put('users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
+
+    // tags
+    Route::get('tags', [TagsController::class, 'index'])->name('tags');
+    Route::post('tags', [TagsController::class, 'store'])->name('tags.store');
+    Route::put('tags/{tag}', [TagsController::class, 'update'])->name('tags.update');
+    Route::delete('tags/{tag}', [TagsController::class, 'destroy'])->name('tags.destroy');
+
+
+    // photos
+    Route::get('photos', [PhotoController::class, 'index'])->name('photos');
+    Route::post('photos', [PhotoController::class, 'store'])->name('photos.store');
+    Route::put('photos/{photo}', [PhotoController::class, 'update'])->name('photos.update');
+    Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+
+    Route::post('photos-store-file', [PhotoController::class, 'storeFile'])->name('photos.store-file');
+
+
+    // tags
+    Route::get('img-categories', [ImgCategoriesController::class, 'index'])->name('img-categories');
+    Route::post('img-categories', [ImgCategoriesController::class, 'store'])->name('img-categories.store');
+    Route::put('img-categories/{img-category}', [ImgCategoriesController::class, 'update'])->name('img-categories.update');
+    Route::delete('img-categories/{img-category}', [ImgCategoriesController::class, 'destroy'])->name('img-categories.destroy');
+
+
+
 
 
 
@@ -72,9 +102,4 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // Route::put('portfolios/{portfolio}', [PortfolioController::class, 'update'])->name('portfolios.update');
     // Route::delete('portfolios/{portfolio}', [PortfolioController::class, 'destroy'])->name('portfolios.destroy');
 
-    // tags
-    Route::get('tags', [TagsController::class, 'index'])->name('tags');
-    Route::post('tags', [TagsController::class, 'store'])->name('tags.store');
-    Route::put('tags/{tag}', [TagsController::class, 'update'])->name('tags.update');
-    Route::delete('tags/{tag}', [TagsController::class, 'destroy'])->name('tags.destroy');
 });
