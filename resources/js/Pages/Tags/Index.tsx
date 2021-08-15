@@ -17,8 +17,8 @@ import EditModal from "./EditModal"
 import AdminTableHead from "@c/Admin/AdminTableHead"
 import { usePage } from "@inertiajs/inertia-react"
 
-import React, { useState, useEffect, ChangeEvent,MouseEvent } from "react"
-import { Inertia,RequestPayload,Page,ActiveVisit } from "@inertiajs/inertia"
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from "react"
+import { Inertia, RequestPayload, Page, ActiveVisit } from "@inertiajs/inertia"
 const useStyles = makeStyles((theme) => ({
   topBtnsWrapp: {
     margin: "15px 0",
@@ -53,8 +53,7 @@ const headCells = [
   },
 ]
 
-
-let timeout:NodeJS.Timeout
+let timeout: NodeJS.Timeout
 
 const Tags = () => {
   const [tagsQuery, setTagsQuery] = useState({
@@ -87,19 +86,21 @@ const Tags = () => {
 
   const classes = useStyles()
 
-
   const {
-      items: { data: tags },
-      items: { total },
-      flash: { success },
-      flash: { error },
-      errors
-    } = usePage().props as PagePropsType
+    items: { data: tags },
+    items: { total },
+    flash: { success },
+    flash: { error },
+    errors,
+  } = usePage().props as PagePropsType
 
-    // Avoid a layout jump when reaching the last page with empty tags.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * perPage - total) : 0
+  // Avoid a layout jump when reaching the last page with empty tags.
+  const emptyRows = page > total / perPage ? perPage - (total % perPage) : 0
 
-    const handleRequestSort = (event: ChangeEvent<HTMLInputElement>, newSort: string) => {
+  const handleRequestSort = (
+    event: ChangeEvent<HTMLInputElement>,
+    newSort: string
+  ) => {
     const isAsc = sort === newSort && direction === "asc"
     const newOrder = isAsc ? "desc" : "asc"
     setTagsQuery({
@@ -109,7 +110,10 @@ const Tags = () => {
     })
   }
 
-  const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage:number) => {
+  const handleChangePage = (
+    event: MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
     setTagsQuery({
       ...tagsQuery,
       page: newPage + 1,
@@ -128,7 +132,10 @@ const Tags = () => {
   const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
 
-  const [currentRow, setCurrentRow]:[TagInterface, React.Dispatch<React.SetStateAction<{}>>] = useState({})
+  const [currentRow, setCurrentRow]: [
+    TagInterface,
+    React.Dispatch<React.SetStateAction<{}>>
+  ] = useState({})
 
   const openCreateModalHandler = () => {
     setOpenCreateModal(true)
@@ -138,16 +145,19 @@ const Tags = () => {
     setOpenCreateModal(false)
   }
 
-  const createSubminHanler = async (values: TagInterface, resetValues: () => void) => {
+  const createSubmitHanler = async (
+    values: TagInterface,
+    resetValues: () => void
+  ) => {
     let data = values as RequestPayload
     Inertia.post(route(route().current()), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenCreateModal(false)
         resetValues()
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -166,10 +176,10 @@ const Tags = () => {
     Inertia.delete(route("tags.destroy", currentRow.id), {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenDeleteConfirmModal(false)
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -189,10 +199,10 @@ const Tags = () => {
     Inertia.put(route("tags.update", currentRow.id), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenEditModal(false)
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -200,14 +210,13 @@ const Tags = () => {
 
   return (
     <AdminLayout title="Tags">
-
       {showErorrs && error && <Alert severity="error">{error}</Alert>}
       {showErorrs && success && <Alert severity="success">{success}</Alert>}
 
       <CreateModat
         errors={errors}
         showErorrs={showErorrs}
-        handleSubmit={createSubminHanler}
+        handleSubmit={createSubmitHanler}
         open={openCreateModal}
         handleClose={closeCreateModalHandler}
       />
@@ -251,14 +260,9 @@ const Tags = () => {
                 rowCount={tags.length}
               />
               <TableBody>
-                {tags.slice().map((row:TagInterface) => {
+                {tags.slice().map((row: TagInterface) => {
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.id}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       <TableCell> {row.id}</TableCell>
                       <TableCell> {row.name}</TableCell>
                       <TableCell align="left">{row.created_at}</TableCell>
@@ -283,7 +287,7 @@ const Tags = () => {
                 {emptyRows > 0 && (
                   <TableRow
                     style={{
-                      height: 53 * emptyRows,
+                      height: 69.5 * emptyRows,
                     }}
                   >
                     <TableCell colSpan={6} />
@@ -298,7 +302,9 @@ const Tags = () => {
             count={total}
             rowsPerPage={perPage}
             page={page - 1}
-            onPageChange={(e,newPage)=>{handleChangePage(e,newPage)}}
+            onPageChange={(e, newPage) => {
+              handleChangePage(e, newPage)
+            }}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>

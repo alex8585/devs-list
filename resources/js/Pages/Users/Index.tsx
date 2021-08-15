@@ -10,7 +10,7 @@ import Alert from "@material-ui/core/Alert"
 import Button from "@material-ui/core/Button"
 
 import AdminLayout from "@l/AdminLayout"
-import React, { useState, useEffect, ChangeEvent,MouseEvent } from "react"
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from "react"
 import { makeStyles } from "@material-ui/styles"
 import moment from "moment"
 import CreateModat from "./CreateModal"
@@ -18,7 +18,7 @@ import DeleteConfirmModal from "@c/Admin/DeleteConfirmModal"
 import EditModal from "./EditModal"
 import AdminTableHead from "@c/Admin/AdminTableHead"
 import { usePage } from "@inertiajs/inertia-react"
-import { Inertia,RequestPayload,Page,ActiveVisit } from "@inertiajs/inertia"
+import { Inertia, RequestPayload, Page, ActiveVisit } from "@inertiajs/inertia"
 
 const useStyles = makeStyles((theme) => ({
   topBtnsWrapp: {
@@ -54,8 +54,7 @@ const headCells = [
   },
 ]
 
-let timeout:NodeJS.Timeout
-
+let timeout: NodeJS.Timeout
 
 const Users = () => {
   const [tagsQuery, setTagsQuery] = useState({
@@ -88,55 +87,61 @@ const Users = () => {
 
   const classes = useStyles()
 
-
   let {
-      items: { data: tags },
-      items: { total },
-      flash: { success },
-      flash: { error },
-      errors,
-    }  = usePage().props as PagePropsType
+    items: { data: tags },
+    items: { total },
+    flash: { success },
+    flash: { error },
+    errors,
+  } = usePage().props as PagePropsType
 
+  // Avoid a layout jump when reaching the last page with empty tags.
+  const emptyRows = page > total / perPage ? perPage - (total % perPage) : 0
 
-    // Avoid a layout jump when reaching the last page with empty tags.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * perPage - total) : 0
+  const handleRequestSort = (
+    event: ChangeEvent<HTMLInputElement>,
+    newSort: string
+  ) => {
+    const isAsc = sort === newSort && direction === "asc"
+    const newOrder = isAsc ? "desc" : "asc"
+    setTagsQuery({
+      ...tagsQuery,
+      direction: newOrder,
+      sort: newSort,
+    })
+  }
 
-    const handleRequestSort = (event:ChangeEvent<HTMLInputElement>, newSort:string) => {
-        const isAsc = sort === newSort && direction === "asc"
-        const newOrder = isAsc ? "desc" : "asc"
-        setTagsQuery({
-            ...tagsQuery,
-            direction: newOrder,
-            sort: newSort,
-        })
-    }
+  const handleChangePage = (
+    event: MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setTagsQuery({
+      ...tagsQuery,
+      page: newPage + 1,
+    })
+  }
 
-    const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage:number) => {
-        setTagsQuery({
-            ...tagsQuery,
-            page: newPage + 1,
-        })
-    }
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    let perPage = parseInt(event.target.value, 10)
+    setTagsQuery({
+      ...tagsQuery,
+      perPage,
+    })
+  }
 
-    const handleChangeRowsPerPage = (event:ChangeEvent<HTMLInputElement>) => {
-        let perPage = parseInt(event.target.value, 10)
-        setTagsQuery({
-            ...tagsQuery,
-            perPage,
-        })
-    }
+  const dateFormat = (timestamp: string) => {
+    let intTimestamp = parseInt(timestamp)
+    return moment(intTimestamp).format("DD-MM-YYYY:HH:MM")
+  }
 
-    const dateFormat = (timestamp: string) => {
-        let intTimestamp = parseInt(timestamp)
-        return moment(intTimestamp).format("DD-MM-YYYY:HH:MM")
-    }
+  const [openCreateModal, setOpenCreateModal] = useState(false)
+  const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState(false)
+  const [openEditModal, setOpenEditModal] = useState(false)
 
-    const [openCreateModal, setOpenCreateModal] = useState(false)
-    const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState(false)
-    const [openEditModal, setOpenEditModal] = useState(false)
-
-
-    const [currentRow, setCurrentRow]:[UserInterface, React.Dispatch<React.SetStateAction<{}>>] = useState({})
+  const [currentRow, setCurrentRow]: [
+    UserInterface,
+    React.Dispatch<React.SetStateAction<{}>>
+  ] = useState({})
 
   const openCreateModalHandler = () => {
     setShowErrors(false)
@@ -147,18 +152,20 @@ const Users = () => {
     setOpenCreateModal(false)
   }
 
-
-  const createSubminHanler = async (values: UserInterface, resetValues: () => void) => {
+  const createSubmitHanler = async (
+    values: UserInterface,
+    resetValues: () => void
+  ) => {
     let data = values as RequestPayload
 
     Inertia.post(route(route().current()), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenCreateModal(false)
         resetValues()
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -177,16 +184,16 @@ const Users = () => {
     Inertia.delete(route("users.destroy", currentRow.id), {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenDeleteConfirmModal(false)
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
   }
 
-  const handleOpenEditModal = (row:UserInterface) => {
+  const handleOpenEditModal = (row: UserInterface) => {
     setShowErrors(false)
     setCurrentRow(row)
     setOpenEditModal(true)
@@ -198,13 +205,13 @@ const Users = () => {
 
   const handleEditSubmit = async () => {
     let data = currentRow as RequestPayload
-    Inertia.put(route("users.update", currentRow.id), data , {
+    Inertia.put(route("users.update", currentRow.id), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenEditModal(false)
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -212,14 +219,13 @@ const Users = () => {
 
   return (
     <AdminLayout title="Users">
-
       {showErorrs && error && <Alert severity="error">{error}</Alert>}
       {showErorrs && success && <Alert severity="success">{success}</Alert>}
 
       <CreateModat
         errors={errors}
         showErorrs={showErorrs}
-        handleSubmit={createSubminHanler}
+        handleSubmit={createSubmitHanler}
         open={openCreateModal}
         handleClose={closeCreateModalHandler}
       />
@@ -260,11 +266,14 @@ const Users = () => {
                 headCells={headCells}
                 order={direction}
                 orderBy={sort}
-                onRequestSort={(e:ChangeEvent<HTMLInputElement>, sort:string)=>handleRequestSort(e,sort)}
+                onRequestSort={(
+                  e: ChangeEvent<HTMLInputElement>,
+                  sort: string
+                ) => handleRequestSort(e, sort)}
                 rowCount={tags.length}
               />
               <TableBody>
-                {tags.slice().map((row:UserInterface, index:number) => {
+                {tags.slice().map((row: UserInterface, index: number) => {
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       <TableCell> {row.id}</TableCell>
@@ -291,10 +300,10 @@ const Users = () => {
                 {emptyRows > 0 && (
                   <TableRow
                     style={{
-                      height: 53 * emptyRows,
+                      height: 69.5 * emptyRows,
                     }}
                   >
-                    <TableCell colSpan={6} />
+                    <TableCell colSpan={4} />
                   </TableRow>
                 )}
               </TableBody>
@@ -306,7 +315,9 @@ const Users = () => {
             count={total}
             rowsPerPage={perPage}
             page={page - 1}
-            onPageChange={(e,newPage)=>{handleChangePage(e,newPage)}}
+            onPageChange={(e, newPage) => {
+              handleChangePage(e, newPage)
+            }}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>

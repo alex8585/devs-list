@@ -14,6 +14,6 @@ class ImgCategory extends Model
 
     public function pfotos(): BelongsToMany
     {
-        return $this->belongsToMany(Photo::class, 'photo_img_category');
+        return $this->belongsToMany(Photo::class, 'photo_img_category', 'photo_id', 'img_categoty_id');
     }
 }

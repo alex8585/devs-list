@@ -14,12 +14,22 @@ class Photo extends Model
 {
     use HasFactory;
 
-    private static $obj = "photos";
+    public static $obj = "photos";
+
+
+    public static  $imgParams =
+    [
+        'full' => [],
+        'img' => ['w' => 300, 'h' => 300, 'fit' => 'crop'],
+        'thumbnail' => ['w' => 100, 'h' => 100, 'fit' => 'crop'],
+    ];
+
 
 
     public function categories(): BelongsToMany
+
     {
-        return $this->belongsToMany(ImgCategory::class, 'photo_img_category');
+        return $this->belongsToMany(ImgCategory::class, 'photo_img_category', 'img_categoty_id', 'photo_id');
     }
 
 
@@ -31,23 +41,21 @@ class Photo extends Model
         return URL::to($fullPath) . "/?" . http_build_query($params);
     }
 
+    public function getThumbnailAttribute()
+    {
+        $params = self::$imgParams['thumbnail'];
+        return self::getUrlByPath($this->url, $params);
+    }
+
     public function getImgUrlAttribute()
     {
-        //'w' => 400, 'h' => 400, 'fit' => 'crop'
-        return $this->imgUrl(['w' => 100]);
+        $params = self::$imgParams['img'];
+        return self::getUrlByPath($this->url, $params);
     }
 
-    public function getBigImgUrlAttribute()
+    public function getFullUrlAttribute()
     {
         //'w' => 400, 'h' => 400, 'fit' => 'crop'
-        return $this->imgUrl([]);
-    }
-
-    public function imgUrl(array $attributes)
-    {
-        if ($this->img) {
-            return URL::to(App::make(Server::class)->fromPath($this->img, $attributes));
-        }
-        return null;
+        return self::getUrlByPath($this->url);
     }
 }

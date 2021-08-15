@@ -16,6 +16,16 @@ interface UserInterface {
     is_admin?: boolean,
 }
 
+interface PhotoInterface {
+    categories?:[],
+    imgUrl?:string,
+    thumbnail?:string
+    id?:number,
+    created_at?:string
+    name?: string,
+}
+
+
 type PagePropsType =
     PageProps & {
         errors: Errors & ErrorBag

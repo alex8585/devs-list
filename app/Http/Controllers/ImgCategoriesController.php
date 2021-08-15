@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ImgCategory;
 use App\Models\Photo;
 use League\Glide\Server;
+use App\Models\ImgCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\URL;
+use App\Http\Requests\ImgCategoryStoreRequest;
+use App\Http\Requests\ImgCategoryUpdateRequest;
 
 class ImgCategoriesController extends Controller
 {
@@ -30,23 +32,24 @@ class ImgCategoriesController extends Controller
     }
 
 
-    public function store(TagStoreRequest $request)
+    public function store(ImgCategoryStoreRequest $request)
     {
-        Tag::create($request->validated());
-        return back()->with('success', "The Tag '{$request->name}' has been created.");
+
+        ImgCategory::create($request->validated());
+        return back()->with('success', "The Img Category '{$request->name}' has been created.");
     }
 
 
-    public function update(Tag $tag, TagUpdateRequest $request)
+    public function update(ImgCategory $imgCategory, ImgCategoryUpdateRequest $request)
     {
-        $tag->update($request->validated());
-        return back()->with('success', "The Tag '{$tag->name}' has been updated.");
+        $imgCategory->update($request->validated());
+        return back()->with('success', "The Img Category '{$imgCategory->name}' has been updated.");
     }
 
 
-    public function destroy(Tag $tag)
+    public function destroy(ImgCategory $imgCategory)
     {
-        $tag->delete();
-        return back()->with('success', "The Tag '{$tag->name}' has been deleted.");
+        $imgCategory->delete();
+        return back()->with('success', "The Img Category '{$imgCategory->name}' has been deleted.");
     }
 }

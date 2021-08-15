@@ -36,7 +36,7 @@ export default function EditModal({
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Edit Tag</DialogTitle>
+        <DialogTitle>Edit Images Category</DialogTitle>
          {errors && showErorrs && Object.keys(errors).length !== 0 && (
           <Alert severity="error">
             {errors && Object.keys(errors).map((keyName, i) => (
@@ -51,7 +51,7 @@ export default function EditModal({
             name="name"
             margin="dense"
             id="name"
-            label="Tag name"
+            label="Category name"
             type="text"
             fullWidth
             variant="standard"

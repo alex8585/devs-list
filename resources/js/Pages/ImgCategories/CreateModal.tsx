@@ -27,33 +27,11 @@ export default function CreateModat({
     name: "",
   })
 
-  const fileInitialValue = {
-    url: undefined,
-    name: "",
-  }
-
-  const [uploadedFile, setUploadedFile] = useState(fileInitialValue)
-
-  const handleChangeFile = async (e:any) => {
-    let file = e.target.files[0]
-    let data = new FormData();
-    data.append("file", file);
-
-    axios.post(route("photos.store-file"), data)
-      .then(res => {
-        setUploadedFile(res.data)
-      })
-
-  }
-
-  console.log(uploadedFile);
-
-
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Create new Photo</DialogTitle>
+        <DialogTitle>Create new Photo category</DialogTitle>
         {errors && showErorrs && Object.keys(errors).length !== 0 && (
           <Alert severity="error">
             {errors &&
@@ -70,35 +48,12 @@ export default function CreateModat({
             name="name"
             margin="dense"
             id="name"
-            label="Tag name"
+            label="Category name"
             type="text"
             fullWidth
             variant="standard"
           />
-        <input
-            type="hidden"
-            name="uploadedFile"
-            value={uploadedFile.name}
-          ></input>
-          {uploadedFile.url && (
-            <img
-              src={uploadedFile.url}
-              alt="Uploaded img"
-              width={400}
-              height={300}
-            />
-          )}
-          <TextField
-            onChange={(e) => handleChangeFile(e)}
-            name="img"
-            margin="dense"
-            id="img"
-            label="Image"
-            type="file"
-            fullWidth
-            variant="standard"
-            value={values.img}
-          />
+
 
         </DialogContent>
         <DialogActions>

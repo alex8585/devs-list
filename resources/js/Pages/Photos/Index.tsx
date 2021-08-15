@@ -17,8 +17,8 @@ import EditModal from "./EditModal"
 import AdminTableHead from "@c/Admin/AdminTableHead"
 import { usePage } from "@inertiajs/inertia-react"
 
-import React, { useState, useEffect, ChangeEvent,MouseEvent } from "react"
-import { Inertia,RequestPayload,Page,ActiveVisit } from "@inertiajs/inertia"
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from "react"
+import { Inertia, RequestPayload, Page, ActiveVisit } from "@inertiajs/inertia"
 const useStyles = makeStyles((theme) => ({
   topBtnsWrapp: {
     margin: "15px 0",
@@ -42,6 +42,11 @@ const headCells = [
     label: "Name",
   },
   {
+    id: "img",
+    sortable: false,
+    label: "Photo",
+  },
+  {
     id: "created_at",
     sortable: true,
     label: "Created at",
@@ -53,18 +58,17 @@ const headCells = [
   },
 ]
 
-
-let timeout:NodeJS.Timeout
+let timeout: NodeJS.Timeout
 
 const Photos = () => {
-  const [tagsQuery, setPhotosQuery] = useState({
+  const [itemsQuery, setItemsQuery] = useState({
     page: 1,
     perPage: 5,
     direction: "asc",
     sort: "name",
   })
 
-  let { page, perPage, direction, sort } = tagsQuery
+  let { page, perPage, direction, sort } = itemsQuery
 
   const [showErorrs, setShowErrors] = useState(false)
 
@@ -79,51 +83,56 @@ const Photos = () => {
   }
 
   useEffect(() => {
-    Inertia.get(route(route().current()), tagsQuery, {
+    Inertia.get(route(route().current()), itemsQuery, {
       replace: true,
       preserveState: true,
     })
-  }, [tagsQuery])
+  }, [itemsQuery])
 
   const classes = useStyles()
 
-
   const {
-      items: { data: items },
-      items: { total },
-      flash: { success },
-      flash: { error },
-      errors
-    } = usePage().props as PagePropsType
+    cats,
+    items: { data: items },
+    items: { total },
+    flash: { success },
+    flash: { error },
+    errors,
+  } = usePage().props as PagePropsType
 
+  //console.log(items);
 
+  // Avoid a layout jump when reaching the last page with empty items.
+  const emptyRows = page > total / perPage ? perPage - (total % perPage) : 0
 
-
-
-    // Avoid a layout jump when reaching the last page with empty items.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * perPage - total) : 0
-
-    const handleRequestSort = (event: ChangeEvent<HTMLInputElement>, newSort: string) => {
+  console.log(page, perPage, total, emptyRows)
+  const handleRequestSort = (
+    event: ChangeEvent<HTMLInputElement>,
+    newSort: string
+  ) => {
     const isAsc = sort === newSort && direction === "asc"
     const newOrder = isAsc ? "desc" : "asc"
-    setPhotosQuery({
-      ...tagsQuery,
+    setItemsQuery({
+      ...itemsQuery,
       direction: newOrder,
       sort: newSort,
     })
   }
 
-  const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage:number) => {
-    setPhotosQuery({
-      ...tagsQuery,
+  const handleChangePage = (
+    event: MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setItemsQuery({
+      ...itemsQuery,
       page: newPage + 1,
     })
   }
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     let perPage = parseInt(event.target.value, 10)
-    setPhotosQuery({
-      ...tagsQuery,
+    setItemsQuery({
+      ...itemsQuery,
       perPage,
     })
   }
@@ -132,7 +141,10 @@ const Photos = () => {
   const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
 
-  const [currentRow, setCurrentRow]:[TagInterface, React.Dispatch<React.SetStateAction<{}>>] = useState({})
+  const [currentRow, setCurrentRow]: [
+    PhotoInterface,
+    React.Dispatch<React.SetStateAction<{}>>
+  ] = useState({})
 
   const openCreateModalHandler = () => {
     setOpenCreateModal(true)
@@ -142,22 +154,27 @@ const Photos = () => {
     setOpenCreateModal(false)
   }
 
-  const createSubminHanler = async (values: TagInterface, resetValues: () => void) => {
-    let data = values as RequestPayload
+  const createSubmitHanler = async (
+    values: PhotoInterface,
+    resetValues: () => void,
+    resetUploadedFile: () => void
+  ) => {
+    let data = values as unknown as RequestPayload
     Inertia.post(route(route().current()), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenCreateModal(false)
         resetValues()
+        resetUploadedFile()
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
   }
 
-  const handleOpenDeleteConfirmModal = (row: TagInterface) => {
+  const handleOpenDeleteConfirmModal = (row: PhotoInterface) => {
     setCurrentRow(row)
     setOpenDeleteConfirmModal(true)
   }
@@ -167,19 +184,19 @@ const Photos = () => {
   }
 
   const handleDeleteConfirm = async () => {
-    Inertia.delete(route("tags.destroy", currentRow.id), {
+    Inertia.delete(route("photos.destroy", currentRow.id), {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenDeleteConfirmModal(false)
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
   }
 
-  const handleOpenEditModal = (row: TagInterface) => {
+  const handleOpenEditModal = (row: PhotoInterface) => {
     setCurrentRow(row)
     setOpenEditModal(true)
   }
@@ -188,15 +205,16 @@ const Photos = () => {
     setOpenEditModal(false)
   }
 
-  const handleEditSubmit = async () => {
+  const handleEditSubmit = async (resetUploadedFile: () => void) => {
     let data = currentRow as RequestPayload
-    Inertia.put(route("tags.update", currentRow.id), data, {
+    Inertia.put(route("photos.update", currentRow.id), data, {
       replace: true,
       preserveState: true,
-      onSuccess: (page:Page) => {
+      onSuccess: (page: Page) => {
         setOpenEditModal(false)
+        resetUploadedFile()
       },
-      onFinish: (visit:ActiveVisit) => {
+      onFinish: (visit: ActiveVisit) => {
         handleShowErrors()
       },
     })
@@ -204,14 +222,14 @@ const Photos = () => {
 
   return (
     <AdminLayout title="Photos">
-
       {showErorrs && error && <Alert severity="error">{error}</Alert>}
       {showErorrs && success && <Alert severity="success">{success}</Alert>}
 
       <CreateModat
+        cats={cats}
         errors={errors}
         showErorrs={showErorrs}
-        handleSubmit={createSubminHanler}
+        handleSubmit={createSubmitHanler}
         open={openCreateModal}
         handleClose={closeCreateModalHandler}
       />
@@ -224,6 +242,7 @@ const Photos = () => {
       />
 
       <EditModal
+        cats={cats}
         errors={errors}
         showErorrs={showErorrs}
         setCurrentRow={setCurrentRow}
@@ -255,16 +274,14 @@ const Photos = () => {
                 rowCount={items.length}
               />
               <TableBody>
-                { items.slice().map((row:TagInterface) => {
+                {items.slice().map((row: PhotoInterface) => {
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.id}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       <TableCell> {row.id}</TableCell>
                       <TableCell> {row.name}</TableCell>
+                      <TableCell>
+                        <img src={row.thumbnail}></img>
+                      </TableCell>
                       <TableCell align="left">{row.created_at}</TableCell>
                       <TableCell className={classes.actionButton}>
                         <Button
@@ -287,7 +304,7 @@ const Photos = () => {
                 {emptyRows > 0 && (
                   <TableRow
                     style={{
-                      height: 53 * emptyRows,
+                      height: 69.5 * emptyRows,
                     }}
                   >
                     <TableCell colSpan={6} />
@@ -302,7 +319,9 @@ const Photos = () => {
             count={total}
             rowsPerPage={perPage}
             page={page - 1}
-            onPageChange={(e,newPage)=>{handleChangePage(e,newPage)}}
+            onPageChange={(e, newPage) => {
+              handleChangePage(e, newPage)
+            }}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>

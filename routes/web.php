@@ -68,8 +68,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // tags
     Route::get('img-categories', [ImgCategoriesController::class, 'index'])->name('img-categories');
     Route::post('img-categories', [ImgCategoriesController::class, 'store'])->name('img-categories.store');
-    Route::put('img-categories/{img-category}', [ImgCategoriesController::class, 'update'])->name('img-categories.update');
-    Route::delete('img-categories/{img-category}', [ImgCategoriesController::class, 'destroy'])->name('img-categories.destroy');
+    Route::put('img-categories/{imgCategory}', [ImgCategoriesController::class, 'update'])->name('img-categories.update');
+    Route::delete('img-categories/{imgCategory}', [ImgCategoriesController::class, 'destroy'])->name('img-categories.destroy');
 
 
 
